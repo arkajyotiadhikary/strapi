@@ -58,7 +58,7 @@ resource "aws_instance" "ar_strapi_instance" {
   ami           = "ami-0f58b397bc5c1f2e8"
   instance_type = "t2.micro"
   subnet_id     = element(data.aws_subnets.default.ids, 0)
-  security_groups = [aws_security_group.strapi_sg.name]
+  vpc_security_group_ids = [aws_security_group.strapi_sg.id]
   key_name = "ps_pd_a"  # Replace with your key pair name
 
   user_data = <<-EOF

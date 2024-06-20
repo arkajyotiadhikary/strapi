@@ -26,11 +26,11 @@ jobs:
           aws-region: ap-south-1
 
       - name: Terraform Init
-        working-directory: environments/production
+        working-directory: .github/environments/production
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: environments/production
+        working-directory: .github/environments/production
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply

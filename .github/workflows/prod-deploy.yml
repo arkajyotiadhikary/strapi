@@ -35,6 +35,8 @@ jobs:
 
       - name: Terraform Plan
         working-directory: .github/environments/production
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply

@@ -36,9 +36,11 @@ jobs:
       - name: Terraform Plan
         working-directory: .github/environments/production
         env:
-          PAT: ${{ secrets.PAT }}
-        run: terraform plan -out=tfplan
+          GITHUB_PAT: ${{ secrets.PAT }}
+        run: terraform plan -out=tfplan -var github_pat=${{ secrets.PAT }}
 
       - name: Terraform Apply
         working-directory: .github/environments/production
-        run: terraform apply -auto-approve tfplan
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        run: terraform apply -auto-approve tfplan -var github_pat=${{ secrets.PAT }}

@@ -34,5 +34,5 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
-        working-directory: ./environments/production
+        working-directory: .github/environments/production
         run: terraform apply -auto-approve tfplan

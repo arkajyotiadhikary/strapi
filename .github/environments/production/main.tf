@@ -9,11 +9,8 @@ data "aws_vpc" "default" {
 }
 
 # Get the default VPC's subnets
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
+data "aws_subnet_ids" "default" {
+  vpc_id = data.aws_vpc.default.id
 }
 
 # Define a security group
@@ -57,9 +54,9 @@ resource "aws_security_group" "strapi_sg" {
 resource "aws_instance" "ar_strapi_instance" {
   ami           = "ami-0f58b397bc5c1f2e8"
   instance_type = "t2.micro"
-  subnet_id     = element(data.aws_subnets.default.ids, 0)
+  subnet_id     = element(data.aws_subnet_ids.default.ids, 0)
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
-  key_name = "ps_pd_a"  # Replace with your key pair name
+  key_name = "ps_pd_a"
 
   user_data = <<-EOF
                 #!/bin/bash

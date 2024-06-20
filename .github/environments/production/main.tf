@@ -86,6 +86,11 @@ resource "aws_instance" "ar_strapi_instance" {
                 git clone https://github.com/PearlThoughts-DevOps-Internship/strapi.git
                 cd strapi
                 git checkout arka-prod
+
+                # Ensure the correct permissions for the Git repository
+                sudo chown -R ubuntu:ubuntu /home/ubuntu/strapi
+                sudo chmod -R 755 /home/ubuntu/strapi
+
                 npm install
                 npm run build
                 pm2 start npm --name "strapi" -- run start

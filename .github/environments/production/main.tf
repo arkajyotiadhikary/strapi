@@ -16,6 +16,11 @@ data "aws_subnets" "default" {
   }
 }
 
+# Get the first subnet's details to use in the instance
+data "aws_subnet" "first" {
+  id = element(data.aws_subnets.default.ids, 0)
+}
+
 # Define a security group
 resource "aws_security_group" "strapi_sg" {
   vpc_id = data.aws_vpc.default.id
@@ -57,7 +62,7 @@ resource "aws_security_group" "strapi_sg" {
 resource "aws_instance" "ar_strapi_instance" {
   ami           = "ami-0f58b397bc5c1f2e8"
   instance_type = "t2.micro"
-  subnet_id     = element(data.aws_subnets.default.ids, 0)
+  subnet_id     = data.aws_subnet.first.id
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
   key_name = "ps_pd_a"
 

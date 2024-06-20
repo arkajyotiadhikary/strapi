@@ -79,8 +79,8 @@ resource "aws_instance" "ar_strapi_instance" {
                 cd /home/ubuntu
 
                 # Configure Git
-                git config --global user.name "Your Name"
-                git config --global user.email "your-email@example.com"
+                git config --global user.name "arkajyotiadhikary"
+                git config --global user.email "arkajyotiadhikary15@gmail.com"
 
                 # Clone and setup the Strapi project
                 git clone https://github.com/PearlThoughts-DevOps-Internship/strapi.git

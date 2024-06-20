@@ -8,11 +8,16 @@ data "aws_vpc" "default" {
   default = true
 }
 
-# Get the default VPC's subnets
+# Get the default VPC's subnets in ap-south-1a
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.default.id]
+  }
+
+  filter {
+    name   = "availability-zone"
+    values = ["ap-south-1a"]
   }
 }
 

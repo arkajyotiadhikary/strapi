@@ -82,8 +82,9 @@ resource "aws_instance" "ar_strapi_instance" {
                 git config --global user.name "arkajyotiadhikary"
                 git config --global user.email "arkajyotiadhikary15@gmail.com"
 
-                # Clone and setup the Strapi project
-                git clone https://github.com/PearlThoughts-DevOps-Internship/strapi.git
+                # Clone and setup the Strapi project using GitHub PAT
+                GITHUB_PAT="${GITHUB_PAT}"
+                git clone https://$GITHUB_PAT@github.com/PearlThoughts-DevOps-Internship/strapi.git
                 cd strapi
                 git checkout arka-prod
 

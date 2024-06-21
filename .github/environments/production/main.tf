@@ -65,7 +65,7 @@ resource "aws_instance" "ar_strapi_instance" {
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
   key_name = "ps_pd_a"
 
-  user_data = templatefile("user_data.tpl", { PAT = var.github_pat })
+  user_data = file("user_data.sh")
 
   tags = {
     Name = "ar-strapi-instance"
@@ -78,9 +78,4 @@ output "instance_public_ip" {
 
 output "instance_id" {
   value = aws_instance.ar_strapi_instance.id
-}
-
-variable "github_pat" {
-  description = "GitHub Personal Access Token"
-  type        = string
 }

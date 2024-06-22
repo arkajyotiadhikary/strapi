@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Update and install necessary packages
 sudo apt-get update
 sudo apt-get install -y git nodejs npm
@@ -13,12 +14,15 @@ cd /home/ubuntu
 git config --global user.name "arkajyotiadhikary"
 git config --global user.email "arkajyotiadhikary15@gmail.com"
 
-# Clone and setup the Strapi project
+
+# Clone the Strapi project repository and change to the project directory
 git clone https://github.com/PearlThoughts-DevOps-Internship/strapi.git
 cd strapi
+
+# Check out the correct branch
 git checkout arka-prod
 
-# Ensure the correct permissions for the Git repository
+# Set permissions for the project directory
 sudo chown -R ubuntu:ubuntu /home/ubuntu/strapi
 sudo chmod -R 755 /home/ubuntu/strapi
 
@@ -33,14 +37,16 @@ TRANSFER_TOKEN_SALT=tobemodified
 JWT_SECRET=tobemodified
 EOT
 
-# Install dependencies and build the project
 npm install
+
+# Build the Strapi project
 npm run build
 
-# Start the Strapi application with pm2
-pm2 start npm --name "strapi" -- run start
+ss list and have it resurrected on reboot
+=======
+# Start the Strapi project using PM2 with the correct working directory
+pm2 start npm --name "strapi" -- run develop --cwd /home/ubuntu/strapi
 
-# Save the pm2 process list and have it resurrected on reboot
 pm2 save
 pm2 startup
 

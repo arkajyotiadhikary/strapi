@@ -1,12 +1,11 @@
 #!/bin/bash
-set -e  # Exit immediately if a command exits with a non-zero status.
 
-# Update the package lists and install required packages
+# Update and install necessary packages
 sudo apt-get update
-sudo apt-get install -y git nodejs npm build-essential libsqlite3-dev
+sudo apt-get install -y git nodejs npm
 
-# Install PM2 and Strapi globally
-sudo npm install -g pm2 strapi@latest
+# Install pm2 globally
+sudo npm install -g pm2
 
 # Navigate to the home directory
 cd /home/ubuntu
@@ -14,6 +13,7 @@ cd /home/ubuntu
 # Configure Git
 git config --global user.name "arkajyotiadhikary"
 git config --global user.email "arkajyotiadhikary15@gmail.com"
+
 
 # Clone the Strapi project repository and change to the project directory
 git clone https://github.com/PearlThoughts-DevOps-Internship/strapi.git
@@ -26,13 +26,31 @@ git checkout arka-prod
 sudo chown -R ubuntu:ubuntu /home/ubuntu/strapi
 sudo chmod -R 755 /home/ubuntu/strapi
 
-# Clean the node_modules directory and package-lock.json file, then reinstall dependencies
-sudo rm -rf node_modules package-lock.json
+# Create .env file with the required environment variables
+cat <<EOT > .env
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS="toBeModified1,toBeModified2"
+API_TOKEN_SALT=tobemodified
+ADMIN_JWT_SECRET=tobemodified
+TRANSFER_TOKEN_SALT=tobemodified
+JWT_SECRET=tobemodified
+EOT
+
 npm install
 
 # Build the Strapi project
 npm run build
 
+ss list and have it resurrected on reboot
+=======
 # Start the Strapi project using PM2 with the correct working directory
 pm2 start npm --name "strapi" -- run develop --cwd /home/ubuntu/strapi
+
 pm2 save
+pm2 startup
+
+# Ensure the pm2 process manager starts on boot
+sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
+
+echo "Setup complete. Strapi should now be running and accessible at http://<your-ec2-instance-public-ip>:1337"

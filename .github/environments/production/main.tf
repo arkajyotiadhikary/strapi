@@ -51,7 +51,7 @@ resource "aws_security_group" "strapi_sg" {
   }
 }
 
-resource "aws_instance" "ar_strapi_instance" {
+resource "aws_instance" "ar_strapi_docker" {
   ami           = "ami-0f58b397bc5c1f2e8"
   instance_type = "t2.medium"
   subnet_id     = data.aws_subnet.first.id
@@ -66,9 +66,9 @@ resource "aws_instance" "ar_strapi_instance" {
 }
 
 output "instance_public_ip" {
-  value = aws_instance.ar_strapi_instance.public_ip
+  value = aws_instance.ar_strapi_docker.public_ip
 }
 
 output "instance_id" {
-  value = aws_instance.ar_strapi_instance.id
+  value = aws_instance.ar_strapi_docker.id
 }

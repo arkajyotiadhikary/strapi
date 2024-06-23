@@ -54,7 +54,7 @@ resource "aws_security_group" "strapi_sg" {
 data "aws_instance" "existing" {
   filter {
     name   = "tag:Name"
-    values = ["ar-strapi-instance"]
+    values = ["ar-strapi-docker"]
   }
 
   filter {
@@ -75,14 +75,14 @@ resource "aws_instance" "ar_strapi_docker" {
   user_data = file("user_data.sh")
 
   tags = {
-    Name = "ar-strapi-instance"
+    Name = "ar-strapi-docker"
   }
 }
 
 output "instance_public_ip" {
-  value = length(data.aws_instance.existing.ids) == 0 ? aws_instance.ar_strapi_docker[0].public_ip : data.aws_instance.existing.instances[0].public_ip
+  value = length(data.aws_instance.existing.ids) == 0 ? aws_instance.ar_strapi_docker[0].public_ip : data.aws_instance.existing.public_ip
 }
 
 output "instance_id" {
-  value = length(data.aws_instance.existing.ids) == 0 ? aws_instance.ar_strapi_docker[0].id : data.aws_instance.existing.instances[0].id
+  value = length(data.aws_instance.existing.ids) == 0 ? aws_instance.ar_strapi_docker[0].id : data.aws_instance.existing.id
 }

@@ -25,6 +25,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
+      - name: Check if instance exists
+        id: check_instance
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=ar-strapi-docker" "Name=instance-state-name,Values=running,pending" --query "Reservations[].Instances[].InstanceId" --output text)
+          echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
+          if [ -z "$INSTANCE_ID" ]; then
+            echo "Instance does not exist"
+            echo "deploy_instance=true" >> $GITHUB_ENV
+          else
+            echo "Instance exists: $INSTANCE_ID"
+            echo "deploy_instance=false" >> $GITHUB_ENV
+
       - name: Terraform Init
         working-directory: .github/environments/production
         run: terraform init
@@ -35,4 +47,5 @@ jobs:
 
       - name: Terraform Apply
         working-directory: .github/environments/production
+        if: env.deploy_instance == 'true'
         run: terraform apply -auto-approve tfplan

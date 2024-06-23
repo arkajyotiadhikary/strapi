@@ -51,7 +51,21 @@ resource "aws_security_group" "strapi_sg" {
   }
 }
 
+data "aws_instance" "existing" {
+  filter {
+    name   = "tag:Name"
+    values = ["ar-strapi-instance"]
+  }
+
+  filter {
+    name   = "instance-state-name"
+    values = ["running", "pending"]
+  }
+}
+
 resource "aws_instance" "ar_strapi_docker" {
+  count = length(data.aws_instance.existing.ids) == 0 ? 1 : 0
+
   ami           = "ami-0f58b397bc5c1f2e8"
   instance_type = "t2.medium"
   subnet_id     = data.aws_subnet.first.id
@@ -66,9 +80,9 @@ resource "aws_instance" "ar_strapi_docker" {
 }
 
 output "instance_public_ip" {
-  value = aws_instance.ar_strapi_docker.public_ip
+  value = length(data.aws_instance.existing.ids) == 0 ? aws_instance.ar_strapi_docker[0].public_ip : data.aws_instance.existing.instances[0].public_ip
 }
 
 output "instance_id" {
-  value = aws_instance.ar_strapi_docker.id
+  value = length(data.aws_instance.existing.ids) == 0 ? aws_instance.ar_strapi_docker[0].id : data.aws_instance.existing.instances[0].id
 }

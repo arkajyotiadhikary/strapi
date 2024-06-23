@@ -63,8 +63,12 @@ data "aws_instance" "existing" {
   }
 }
 
+locals {
+  create_instance = length(data.aws_instance.existing.ids) == 0
+}
+
 resource "aws_instance" "ar_strapi_docker" {
-  count = length(data.aws_instance.existing.ids) == 0 ? 1 : 0
+  count = local.create_instance ? 1 : 0
 
   ami           = "ami-0f58b397bc5c1f2e8"
   instance_type = "t2.medium"
@@ -80,9 +84,9 @@ resource "aws_instance" "ar_strapi_docker" {
 }
 
 output "instance_public_ip" {
-  value = length(data.aws_instance.existing.ids) == 0 ? aws_instance.ar_strapi_docker[0].public_ip : data.aws_instance.existing.public_ip
+  value = local.create_instance ? aws_instance.ar_strapi_docker[0].public_ip : data.aws_instance.existing.public_ips[0]
 }
 
 output "instance_id" {
-  value = length(data.aws_instance.existing.ids) == 0 ? aws_instance.ar_strapi_docker[0].id : data.aws_instance.existing.id
+  value = local.create_instance ? aws_instance.ar_strapi_docker[0].id : data.aws_instance.existing.ids[0]
 }

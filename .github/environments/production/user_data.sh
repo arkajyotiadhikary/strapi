@@ -2,18 +2,21 @@
 
 # Update and install necessary packages
 sudo apt-get update
-sudo apt-get install -y git nodejs npm
+sudo apt-get install -y git nodejs npm docker.io
 
-# Install pm2 globally
-sudo npm install -g pm2
+# Start Docker service
+sudo systemctl start docker
+sudo systemctl enable docker
 
-# Navigate to the home directory
-cd /home/ubuntu
+# Add the ubuntu user to the docker group
+sudo usermod -aG docker ubuntu
+
+# Navigate to the /srv directory
+cd /srv
 
 # Configure Git
 git config --global user.name "arkajyotiadhikary"
 git config --global user.email "arkajyotiadhikary15@gmail.com"
-
 
 # Clone the Strapi project repository and change to the project directory
 git clone https://github.com/PearlThoughts-DevOps-Internship/strapi.git
@@ -23,8 +26,8 @@ cd strapi
 git checkout arka-prod
 
 # Set permissions for the project directory
-sudo chown -R ubuntu:ubuntu /home/ubuntu/strapi
-sudo chmod -R 755 /home/ubuntu/strapi
+sudo chown -R ubuntu:ubuntu /srv/strapi
+sudo chmod -R 755 /srv/strapi
 
 # Create .env file with the required environment variables
 cat <<EOT > .env
@@ -37,20 +40,28 @@ TRANSFER_TOKEN_SALT=tobemodified
 JWT_SECRET=tobemodified
 EOT
 
-npm install
+# Build the Docker image for the Strapi project
+sudo docker build -t strapi-app .
 
-# Build the Strapi project
-npm run build
+# Run the Strapi container
+sudo docker run -d -p 1337:1337 --name strapi-app --env-file .env strapi-app
 
-ss list and have it resurrected on reboot
-=======
-# Start the Strapi project using PM2 with the correct working directory
-pm2 start npm --name "strapi" -- run develop --cwd /home/ubuntu/strapi
+# Ensure the Strapi container starts on boot
+sudo tee /etc/systemd/system/strapi-app.service > /dev/null <<EOF
+[Unit]
+Description=Strapi Container
+After=docker.service
+Requires=docker.service
 
-pm2 save
-pm2 startup
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker start -a strapi-app
+ExecStop=/usr/bin/docker stop -t 2 strapi-app
 
-# Ensure the pm2 process manager starts on boot
-sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
+[Install]
+WantedBy=default.target
+EOF
+
+sudo systemctl enable strapi-app.service
 
 echo "Setup complete. Strapi should now be running and accessible at http://<your-ec2-instance-public-ip>:1337"

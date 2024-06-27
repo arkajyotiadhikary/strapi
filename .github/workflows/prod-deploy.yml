@@ -1,17 +1,29 @@
 name: Deploy to Production
 
 on:
-  push:
-    branches:
-      - arka-prod
+  workflow_run:
+    workflows: ["Build and Upload Artifact"]
+    types:
+      - completed
 
 jobs:
-  terraform:
+  deploy:
     runs-on: ubuntu-latest
     environment: arka-production
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Download production artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifact
+          path: .
+
+      - name: Extract production artifacts
+        run: tar -xzf build-artifact.tar.gz
+        shell: bash
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -29,14 +41,11 @@ jobs:
         working-directory: .github/environments/production
         run: terraform init
 
-      - name: Import Existing EC2 Instance
+      - name: Apply the infrastructure
         working-directory: .github/environments/production
-        run: terraform import aws_instance.ar_strapi_instance i-08c0e2bb3f1a56705 || echo "Instance already imported"
-
-      - name: Terraform Plan
-        working-directory: .github/environments/production
-        run: terraform plan -out=tfplan
-
-      - name: Terraform Apply
-        working-directory: .github/environments/production
-        run: terraform apply -auto-approve tfplan
+        env:
+          TF_VAR_user: ${{ secrets.USER }}
+          TF_VAR_privatekey: ${{ secrets.AWS_PRIVATE_KEY }}
+          TF_VAR_docker_username: ${{ secrets.DOCKER_USERNAME }}
+          TF_VAR_docker_password: ${{ secrets.DOCKER_PASSWORD }}
+        run: terraform apply -auto-approve

@@ -1,7 +1,11 @@
-# terraform.tfvars
-region        = "ap-south-1"
-vpc_id        = "vpc-0a458942f17ff07b4"
-instance_type = "t2.micro"
-subnet_id     = "subnet-0e85380db02601142"
-key_name      = "arka_key"
-user          = "ubuntu"
+ami                 = "ami-0abcd1234efgh5678"  # Replace with your actual AMI ID
+availability_zone   = "ap-south-1a"
+instance_type       = "t2.micro"
+vpc_security_group_ids = ["sg-0abcd1234efgh5678"]  # Replace with your actual Security Group ID
+subnet_id           = "subnet-0abcd1234efgh5678"  # Replace with your actual Subnet ID
+key_name            = "arka_key"
+docker_username     = "your_dockerhub_username"
+docker_password     = "your_dockerhub_password"
+user                = "ubuntu"
+privatekey          = "path/to/your/private/key.pem"
+region              = "ap-south-1"

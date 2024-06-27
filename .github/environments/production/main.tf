@@ -56,7 +56,3 @@ resource "null_resource" "example" {
     ]
   }
 }
-
-output "instance_public_ip" {
-  value = aws_instance.arka_strapi.public_ip
-}

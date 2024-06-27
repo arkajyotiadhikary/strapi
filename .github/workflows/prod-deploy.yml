@@ -6,12 +6,24 @@ on:
       - arka-prod
 
 jobs:
-  terraform:
+  build-and-deploy:
     runs-on: ubuntu-latest
     environment: arka-production
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the application
+        run: npm run build
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -31,12 +43,15 @@ jobs:
 
       - name: Import Existing EC2 Instance
         working-directory: .github/environments/production
-        run: terraform import aws_instance.ar_strapi_docker || echo "Instance already imported"
+        run: |
+          terraform import aws_instance.ar_strapi_docker your_instance_id || echo "Instance already imported or not required"
 
       - name: Terraform Plan
         working-directory: .github/environments/production
+        id: plan
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
+        if: success()
         working-directory: .github/environments/production
         run: terraform apply -auto-approve tfplan

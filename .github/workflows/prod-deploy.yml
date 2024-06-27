@@ -42,10 +42,10 @@ jobs:
         run: terraform init
 
       - name: Apply the infrastructure
-        env:
-          USER: ${{ secrets.USER }}
-          PRIVATEKEY: ${{ secrets.AWS_PRIVATE_KEY }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: terraform apply -var user="${{ secrets.USER }}" -var privatekey="${{ secrets.AWS_PRIVATE_KEY }}" -var docker_username="${{ secrets.DOCKER_USERNAME }}" -var docker_password="${{ secrets.DOCKER_PASSWORD }}" -auto-approve
         working-directory: .github/environments/production
+        env:
+          TF_VAR_user: ${{ secrets.USER }}
+          TF_VAR_privatekey: ${{ secrets.AWS_PRIVATE_KEY }}
+          TF_VAR_docker_username: ${{ secrets.DOCKER_USERNAME }}
+          TF_VAR_docker_password: ${{ secrets.DOCKER_PASSWORD }}
+        run: terraform apply -auto-approve

@@ -25,7 +25,10 @@ jobs:
         run: npm run build
 
       - name: Archive production artifacts
-        run: tar -czf build-artifact.tar.gz .
+        run: |
+          mkdir -p artifacts
+          cp -r build/* artifacts/
+          tar -czf build-artifact.tar.gz -C artifacts .
         shell: bash
 
       - name: Upload production artifacts

@@ -1,8 +1,3 @@
-provider "aws" {
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
-  region     = "ap-south-1"
-}
 
 resource "aws_instance" "arka_strapi" {
   ami                         = "ami-id"  # Update with your AMI ID

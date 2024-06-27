@@ -23,7 +23,6 @@ jobs:
 
       - name: Extract production artifacts
         run: tar -xzf build-artifact.tar.gz
-        shell: bash
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1

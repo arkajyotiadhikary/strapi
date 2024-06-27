@@ -25,7 +25,7 @@ jobs:
         run: npm run build
 
       - name: Archive production artifacts
-        run: tar -czf build-artifact.tar.gz .
+        run: tar --exclude=build-artifact.tar.gz -czf build-artifact.tar.gz .
         shell: bash
 
       - name: Upload production artifacts

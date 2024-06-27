@@ -33,3 +33,18 @@ variable "private_key_path" {
   description = "Path to the private key file"
   type        = string
 }
+
+variable "availability_zone" {
+  description = "value of availability zone"
+  type        = string
+}
+
+variable "docker_username" {
+  description = "Docker username"
+  type        = string
+}
+
+variable "docker_password" {
+  description = "Docker password"
+  type        = string
+}

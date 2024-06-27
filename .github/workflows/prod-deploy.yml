@@ -1,12 +1,13 @@
 name: Deploy to Production
 
 on:
-  push:
-    branches:
-      - arka-prod
+  workflow_run:
+    workflows: ["Build and Upload Artifact"]
+    types:
+      - completed
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     environment: arka-production
 
@@ -14,16 +15,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Download production artifacts
+        uses: actions/download-artifact@v2
         with:
-          node-version: "18.x"
+          name: build-artifact
+          path: .
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build the application
-        run: npm run build
+      - name: Extract production artifacts
+        run: tar -xzf build-artifact.tar.gz
+        shell: bash
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -33,25 +33,19 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
       - name: Terraform Init
         working-directory: .github/environments/production
         run: terraform init
 
-      - name: Import Existing EC2 Instance
+      - name: Apply the infrastructure
+        env:
+          USER: ${{ secrets.USER }}
+          PRIVATEKEY: ${{ secrets.AWS_PRIVATE_KEY }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: terraform apply -var user="${{ secrets.USER }}" -var privatekey="${{ secrets.AWS_PRIVATE_KEY }}" -var docker_username="${{ secrets.DOCKER_USERNAME }}" -var docker_password="${{ secrets.DOCKER_PASSWORD }}" -auto-approve
         working-directory: .github/environments/production
-        run: |
-          terraform import aws_instance.ar_strapi_docker your_instance_id || echo "Instance already imported or not required"
-
-      - name: Terraform Plan
-        working-directory: .github/environments/production
-        id: plan
-        run: terraform plan -out=tfplan
-
-      - name: Terraform Apply
-        if: success()
-        working-directory: .github/environments/production
-        run: terraform apply -auto-approve tfplan

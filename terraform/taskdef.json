@@ -1,0 +1,48 @@
+{
+    "family": "ar-td",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+        {
+            "name": "my-strapi-app-container",
+            "image": "533266978173.dkr.ecr.ap-south-1.amazonaws.com/strapi-next:latest",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [
+                {
+                    "containerPort": 1337,
+                    "hostPort": 1337,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "systemControls": []
+        },
+        {
+            "name": "nginx",
+            "image": "533266978173.dkr.ecr.ap-south-1.amazonaws.com/nginx-back:latest",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "systemControls": []
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "1024",
+    "executionRoleArn": "arn:aws:iam::533266978173:role/ecsTaskExecutionRole"
+}

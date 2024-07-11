@@ -1,0 +1,38 @@
+name: Build and Upload Artifact
+
+on:
+  push:
+    branches:
+      - arka-dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.x"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the application
+        run: npm run build
+
+      - name: Archive production artifacts
+        run: |
+          mkdir -p artifacts
+          cp -r build/* artifacts/
+          tar -czf build-artifact.tar.gz -C artifacts .
+        shell: bash
+
+      - name: Upload production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifact
+          path: build-artifact.tar.gz
